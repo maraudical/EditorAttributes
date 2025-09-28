@@ -80,7 +80,8 @@ namespace EditorAttributes.Editor
 							{
 								color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray,
 								unityFontDefinition = textCopy.style.unityFontDefinition,
-								unityTextAlign = TextAnchor.MiddleRight,
+								suffix.style.fontSize = 10,
+								unityTextAlign = TextAnchor.MiddleLeft,
 								flexGrow = 1f,
 								flexShrink = 1f,
 								paddingLeft = 1f
