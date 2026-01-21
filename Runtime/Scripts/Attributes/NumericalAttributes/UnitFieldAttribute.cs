@@ -13,6 +13,16 @@ namespace EditorAttributes
         /// <summary>
         /// Attribute to display a numerical field as a specified unit
         /// </summary>
+        /// <param name="displayUnit">The unit to display in the inspector</param>
+        public UnitFieldAttribute(Unit displayUnit)
+        {
+            DisplayUnit = displayUnit.ToString();
+            ConversionUnit = displayUnit.ToString();
+        }
+
+        /// <summary>
+        /// Attribute to display a numerical field as a specified unit
+        /// </summary>
         /// <param name="customDisplayUnit">The custom unit to display in the inspector</param>
         public UnitFieldAttribute(string customDisplayUnit)
         {

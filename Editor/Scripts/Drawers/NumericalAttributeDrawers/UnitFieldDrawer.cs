@@ -33,16 +33,21 @@ namespace EditorAttributes.Editor
 
                 foreach (var inputField in inputFields)
                 {
+                    inputField.Q<TextElement>().style.flexGrow = 0;
+
                     Label unitLabel = new(convertedUnit.unitLabel)
                     {
                         focusable = false,
                         tooltip = unitFieldAttribute.DisplayUnit,
                         style =
                         {
-                            color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.gray,
-                            unityTextAlign = TextAnchor.MiddleRight,
+                            color = CanApplyGlobalColor ? EditorExtension.GLOBAL_COLOR : Color.white,
+                            opacity = 0.5f,
+                            unityTextAlign = TextAnchor.MiddleLeft,
                             flexGrow = 1f,
-                            flexShrink = 1f
+                            flexShrink = 1f,
+                            fontSize = 10,
+                            paddingLeft = 1f
                         },
                     };
 
