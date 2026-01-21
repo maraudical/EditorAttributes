@@ -1,3 +1,40 @@
+EditorAttributes v3.0.0 Changelog:
+- Project refactoring
+- Ended support for Unity 2022
+- Added LayerDropdown Attribute
+- Added ApplyMaterial Attribute
+- Added option to toggle whether an object is set to dirty or not on button press
+- Added an optional group title to the vertical group
+- Removed the TimeField Attribute
+- Removed the SelectionButtons Attribute
+- Updated the look of the tab group
+- Made the Void struct readonly
+- AssetPreview Attribute will now display the texture itself instead of its preview if the type is a texture
+- Fixed custom unit definitions throwing null error
+- Fixed Button Attribute enum parameter throwing an argument null error
+- Fixed Button Attribute duplicating from inheritance
+- Fixed Button not supporting vector parameters
+- Fixed member finding getting the member from the base object instead of the nested object if the member has the same name
+
+EditorAttributes v2.9.2 Changelog:
+- PropertyDropdown Attribute now supports any UnityEngine.Object type
+- PropertyDropdown Attribute will now draw custom editors
+- Fixed conditional fields not working inside groups
+- Fixed Button Attribute not supporting enums anymore
+- Fixed Dropdown Attribute not updating when collection becomes invalid
+- Fixed DataTable adding labels to array elements after the first one when inside a custom object
+
+EditorAttributes v2.9.1 Changelog:
+- Added char support to Button Attribute parameters and ShowInInspector Attribute
+- Added an Asset Preview Load Time setting to the project settings
+- Asset previews now load asynchronously
+- Required Attribute now has the option to add a button on the help box to auto reference the field
+- Attributes can now find private inherited members
+- Fixed HideInChildren Attribute no longer working
+- Fixed PropertyDropdown not working on child types deeper in the hierarchy
+- Fixed Button no longer supporting string parameters
+- Fixed Button throwing a stack overflow exception when attempting to use a non supported primitive type parameter
+
 EditorAttributes v2.9.0 Changelog:
 - Added checks for duplicate units and empty unit names when defining custom units
 - Added an additional parameter to ValueButtons Attribute for displaying custom labels for items

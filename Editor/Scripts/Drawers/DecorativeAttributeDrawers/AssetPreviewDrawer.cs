@@ -1,77 +1,79 @@
 using UnityEngine;
 using UnityEditor;
-using System.Threading;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using System.Threading.Tasks;
 
 namespace EditorAttributes.Editor
 {
-	[CustomPropertyDrawer(typeof(AssetPreviewAttribute))]
+    [CustomPropertyDrawer(typeof(AssetPreviewAttribute))]
     public class AssetPreviewDrawer : PropertyDrawerBase
     {
-		public override VisualElement CreatePropertyGUI(SerializedProperty property)
-		{
-			var assetPreviewAttribute = attribute as AssetPreviewAttribute;
-			var root = new VisualElement();
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            if (property.propertyType != SerializedPropertyType.ObjectReference)
+                return new HelpBox("The AssetPreview Attribute can only be attached on to <b>UnityEngine.Object</b> types", HelpBoxMessageType.Error);
 
-			var propertyField = CreatePropertyField(property);
+            var assetPreviewAttribute = attribute as AssetPreviewAttribute;
 
-			root.Add(propertyField);
+            VisualElement root = new();
+            Image image = new();
+            PropertyField propertyField = CreatePropertyField(property);
 
-            if (property.propertyType == SerializedPropertyType.ObjectReference)
+            GetAssetPreview(property, assetPreviewAttribute, root, image);
+            propertyField.RegisterValueChangeCallback((changeEvent) => GetAssetPreview(property, assetPreviewAttribute, root, image));
+
+            root.Add(propertyField);
+            root.Add(image);
+
+            return root;
+        }
+
+        private async void GetAssetPreview(SerializedProperty property, AssetPreviewAttribute assetPreviewAttribute, VisualElement root, Image image)
+        {
+            if (property.objectReferenceValue == null)
             {
-				var image = new Image();
-
-				root.Add(image);
-
-				// Register the callback later else arrays have a stroke
-				ExecuteLater(root, () =>
-				{
-					GetAssetPreview(property, assetPreviewAttribute, root, image);
-
-					propertyField.RegisterValueChangeCallback((changeEvent) => GetAssetPreview(property, assetPreviewAttribute, root, image));
-				});
-			}
-            else
-            {
-                root.Add(new HelpBox("The attached field is not a valid asset", HelpBoxMessageType.Error));
+                RemoveElement(root, image);
+                return;
             }
 
-			return root;
-		}
+            Texture2D texture = null;
 
-		private void GetAssetPreview(SerializedProperty property, AssetPreviewAttribute assetPreviewAttribute, VisualElement root, Image image)
-		{
-			if (property.objectReferenceValue == null)
-			{
-				RemoveElement(root, image);
-				return;
-			}
+            // When reassigning the object reference and the preview is not cached yet the texture will return null the first time, so we request it a second time after the first call cached it
+            for (int i = 0; i < 2; i++)
+            {
+                if (texture != null)
+                    break;
 
-			int attempts = 0; // Safety measure to prevent an infinite loop if the texture cant be loaded
-			Texture2D texture = null;
+                string assetPath = AssetDatabase.GetAssetPath(property.objectReferenceValue);
 
-			while (texture == null && attempts < 3)
-			{
-				attempts++;
-				texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
+                // See if the asset is a texture first if so display the texture itself instead of it's lower res preview
+                if (AssetDatabase.GetMainAssetTypeAtPath(assetPath) == typeof(Texture2D))
+                {
+                    texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+                }
+                else
+                {
+                    texture = AssetPreview.GetAssetPreview(property.objectReferenceValue);
+                }
 
-				Thread.Sleep(20); // Suspend the main thread for a bit to give time for the asset preview to load since is doing it asynchronously
-			}
-			
-			if (texture == null)
-			{
-				RemoveElement(root, image);
-				return;
-			}
+                await Task.Delay(EditorAttributesSettings.instance.assetPreviewLoadTime); // Give time for the asset preview to load since is doing it asynchronously under the hood
+            }
 
-			var imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetTextureSize(texture).x : assetPreviewAttribute.PreviewWidth;
-			var imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetTextureSize(texture).y : assetPreviewAttribute.PreviewHeight;
+            if (texture == null)
+            {
+                RemoveElement(root, image);
+                return;
+            }
 
-			image.image = texture;
-			image.style.width = imageWidth;
-			image.style.height = imageHeight;
+            float imageWidth = assetPreviewAttribute.PreviewWidth == 0f ? GetTextureSize(texture).x : assetPreviewAttribute.PreviewWidth;
+            float imageHeight = assetPreviewAttribute.PreviewHeight == 0f ? GetTextureSize(texture).y : assetPreviewAttribute.PreviewHeight;
 
-			root.Add(image);
-		}
-	}
+            image.image = texture;
+            image.style.width = imageWidth;
+            image.style.height = imageHeight;
+
+            root.Add(image);
+        }
+    }
 }

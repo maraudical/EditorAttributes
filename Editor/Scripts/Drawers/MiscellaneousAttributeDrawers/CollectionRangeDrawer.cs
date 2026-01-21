@@ -1,7 +1,7 @@
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-using EditorAttributes.Editor.Utility;
 
 namespace EditorAttributes.Editor
 {
@@ -10,25 +10,18 @@ namespace EditorAttributes.Editor
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var collectionRangeAttribute = attribute as CollectionRangeAttribute;
-            var root = new VisualElement();
-
-            if (!ReflectionUtility.IsPropertyCollection(property))
+            if (!property.isArray)
                 return new HelpBox("The CollectionRange Attribute can only be used on collections", HelpBoxMessageType.Error);
 
-            var propertyField = CreatePropertyField(property);
+            var collectionRangeAttribute = attribute as CollectionRangeAttribute;
 
-#if UNITY_2023_3_OR_NEWER
+            PropertyField propertyField = CreatePropertyField(property);
+
             ClampCollectionSize(property, collectionRangeAttribute);
 
-            propertyField.RegisterValueChangeCallback((evt) => ClampCollectionSize(property, collectionRangeAttribute));
-#else
-            root.Add(new HelpBox("The CollectionRange Attribute is only available in <b>Unity 6 and above</b>", HelpBoxMessageType.Warning));
-#endif
+            propertyField.RegisterValueChangeCallback((callback) => ClampCollectionSize(property, collectionRangeAttribute));
 
-            root.Add(propertyField);
-
-            return root;
+            return propertyField;
         }
 
         private void ClampCollectionSize(SerializedProperty property, CollectionRangeAttribute collectionRangeAttribute)
