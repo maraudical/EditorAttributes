@@ -1,3 +1,26 @@
+EditorAttributes v3.0.3 Changelog:
+
+- Added BoundsInt, Rect and RectInt support to the DrawHandle Attribute
+- The AnimatorParamDropdown Attribute can now automatically grab the Animator component on the same GameObject
+- Fixed buttons duplicating on inherited scripts when functions are not private
+- Fixed alignment with dropdown errors
+
+EditorAttributes v3.0.2 Changelog:
+- Added applyToCollection parameter to the Validate Attribute
+- AnimatorParamDropdown can now be attached to an int returning the parameter hash
+- Updated deprecated API's in Unity 6.4
+
+EditorAttributes v3.0.1 Changelog:
+- Added the ability to filter TypeDropdown by certain types
+- Added makeDirty parameter to ButtonField Attribute
+- Slightly adjusted group alignments
+- DataTables can now contain serialized objects and collections
+- The editor attributes drawing of the default inspector can now be disabled
+- Fixed DataTable drawing labels in collections past the first element
+- Fixed finding property members inside serialized classes throwing an error
+- Fixed Dropdown reseting value after refreshing the inspector when using dictionaries
+- Fixed AssetPreview not displaying sliced sprites
+
 EditorAttributes v3.0.0 Changelog:
 - Project refactoring
 - Ended support for Unity 2022

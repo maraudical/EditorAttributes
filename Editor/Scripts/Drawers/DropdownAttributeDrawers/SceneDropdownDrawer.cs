@@ -11,10 +11,12 @@ namespace EditorAttributes.Editor
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            if (property.propertyType is not (SerializedPropertyType.String or SerializedPropertyType.Integer))
+            if (!IsSupportedPropertyType(property))
                 return new HelpBox("The SceneDropdown Attribute can only be attached to a string or int", HelpBoxMessageType.Error);
 
+            VisualElement root = new();
             HelpBox errorBox = new();
+
             List<string> sceneNames = GetSceneList(errorBox);
             DropdownField dropdownField = CreateDropdownField(sceneNames, property);
 
@@ -26,8 +28,10 @@ namespace EditorAttributes.Editor
                     dropdownField.choices = sceneNames;
             });
 
-            DisplayErrorBox(dropdownField, errorBox);
-            return dropdownField;
+            root.Add(dropdownField);
+
+            DisplayErrorBox(root, errorBox);
+            return root;
         }
 
         protected override void PasteValue(VisualElement element, SerializedProperty property, string clipboardValue)
@@ -45,6 +49,8 @@ namespace EditorAttributes.Editor
                 Debug.LogWarning($"Could not paste value <b>{clipboardValue}</b> since is not availiable as an option in the dropdown");
             }
         }
+
+        protected override bool IsSupportedPropertyType(SerializedProperty property) => property.propertyType is SerializedPropertyType.String or SerializedPropertyType.Integer;
 
         protected override string SetDropdownDefaultValue(List<string> collectionValues, SerializedProperty property)
         {
@@ -79,7 +85,7 @@ namespace EditorAttributes.Editor
             }
             else
             {
-                Debug.LogWarning($"The value <b>{GetPropertyValueAsString(trackedProperty)}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid scene identifier.", trackedProperty.serializedObject.targetObject);
+                Debug.LogWarning($"The value <b>{GetPropertyValueAsString(trackedProperty)}</b> set to the <b>{trackedProperty.name}</b> variable is not a valid scene identifier", trackedProperty.serializedObject.targetObject);
             }
         }
 
