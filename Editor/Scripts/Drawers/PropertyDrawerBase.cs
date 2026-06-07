@@ -829,11 +829,11 @@ namespace EditorAttributes.Editor
             {
                 if (notify)
                 {
-                    textField.value = value.ToString();
+                    textField.value = (string)value;
                 }
                 else
                 {
-                    textField.SetValueWithoutNotify(value.ToString());
+                    textField.SetValueWithoutNotify((string)value);
                 }
             }
             else if (field is IntegerField integerField)
