@@ -203,6 +203,13 @@ namespace EditorAttributes.Editor
             new(Unit.Knots, "kn", UnitCategory.Speed, 0.514444d),
             new(Unit.Mach, "mach", UnitCategory.Speed, 343d),
 
+			// Force (base: Newton)
+			new(Unit.Newton, "N", UnitCategory.Force, 1d),
+            new(Unit.Kilonewton, "kN", UnitCategory.Force, 1_000d),
+            new(Unit.Dyne, "dyn", UnitCategory.Force, 1e-5d),
+            new(Unit.PoundForce, "lbf", UnitCategory.Force, 4.44822d),
+            new(Unit.KilogramForce, "kgf", UnitCategory.Force, 9.80665d),
+
 			// Energy (base: Joule)
 			new(Unit.ElectronVolt, "eV", UnitCategory.Energy, 1.60218e-19d),
             new(Unit.Joule, "J", UnitCategory.Energy, 1d),
@@ -334,6 +341,18 @@ namespace EditorAttributes.Editor
 
             if (UNIT_CONVERSION_MAP.TryGetValue((from, to), out var converter))
                 return converter;
+
+            // A single unit needs no conversion, so fall back to an identity conversion using the unit name as the label
+            if (from == to && !string.IsNullOrWhiteSpace(from))
+            {
+                return new UnitConverter
+                {
+                    from = from,
+                    to = to,
+                    unitLabel = from,
+                    conversion = 1d
+                };
+            }
 
             return null;
         }
